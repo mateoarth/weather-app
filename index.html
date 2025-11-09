@@ -1,0 +1,202 @@
+<!--
+File: /C:/Users/USER/Desktop/CODED/My weather app/index.html
+Purpose:
+    - Single-page Weather App UI. Allows user to search for a city and displays
+        current weather, basic conditions (humidity, wind), and a short forecast.
+    - Separates states: initial prompt (search-city), results (weather-info),
+        and not-found (not-found).
+
+Structure Overview:
+    - <main class="main-container"> contains the entire app.
+    - Header / Search:
+        - <header class="input-container">
+            - <input class="city-input" placeholder="Search City" type="text">
+            - <button class="search-btn"> triggers the search action (contains Material icon).
+        - Expected behavior: JS listens for click/enter and uses input value to fetch weather.
+    - Results view (.weather-info, initially style="display: none;"):
+        - Location & date:
+            - .location contains a location icon and .country-txt for city/country name.
+            - .current-date-txt expected to show formatted current date.
+        - Summary:
+            - .weather-summary-img (SVG) shows weather illustration.
+            - .temp-txt shows temperature (e.g., "29 °C").
+            - .condition-txt describes condition (e.g., "Clouds").
+        - Conditions:
+            - Reusable .condition-item blocks show humidity and wind inside .weather-condition-container.
+            - Values in .regular-value-txt expected to be updated by JS.
+        - Forecast:
+            - .forecast-items-container holds multiple .forecast-item elements (date, icon, temp).
+            - Intended for short-term forecast (e.g., next 3-4 days/hours).
+    - Initial prompt (.search-city.section-message): displayed before any search.
+    - Not-found (.not-found.section-message, initially display: none): shown when search fails.
+
+Assets and External Resources:
+    - Google Material Symbols font loaded for icons.
+    - Local stylesheet: style.css
+    - Local script: script.js (loaded with defer) — responsible for:
+        - Handling search input and button interactions.
+        - Fetching weather data (likely from a weather API).
+        - Updating DOM nodes (.country-txt, .temp-txt, .condition-txt, icons, forecast items).
+        - Toggling visibility between .search-city, .weather-info, and .not-found.
+    - Local images referenced under "assets/assets/..." — verify the correct path (duplicate "assets/assets" may be unintentional).
+
+DOM API Contract (class names used by JS):
+    - Input: .city-input
+    - Trigger: .search-btn
+    - Views:
+        - Results: .weather-info
+        - Empty prompt: .search-city
+        - Not found: .not-found
+    - Updatable fields:
+        - .country-txt
+        - .current-date-txt
+        - .weather-summary-img (src)
+        - .temp-txt
+        - .condition-txt
+        - .weather-condition-container .regular-value-txt (humidity, wind)
+        - .forecast-items-container .forecast-item (date, img src, temp)
+    - Ensure JS queries these selectors exactly or update code to match.
+
+Accessibility & Usability Notes:
+    - Add aria-label or <label> for the search input for screen readers.
+    - Provide meaningful alt attributes for decorative images (currently some img elements lack alt text).
+    - Support keyboard "Enter" to submit search.
+    - Announce state changes for assistive tech (e.g., use role="status" or aria-live regions when results load or on error).
+
+Localization & Formatting:
+    - Temperature unit currently shown as "°C" in markup; consider supporting unit toggle (C/F).
+    - Date strings (e.g., "Mon, 20 Oct") should be generated from a Date object using locale-aware formatting.
+    - Wind speed unit "M/s" should be normalized to "m/s" or localized.
+
+Error Handling & Edge Cases:
+    - Validate input before making API calls (non-empty, trimmed).
+    - Handle API rate limits, network errors, and unexpected responses.
+    - Gracefully handle missing forecast entries or absent icons.
+
+Performance & Maintenance:
+    - Consider preloading or inlining critical CSS for faster first paint.
+    - Use SVG sprite or optimized image assets to reduce requests.
+    - Check duplicate path "assets/assets" and clean up folder structure to avoid confusion.
+
+Possible Improvements / TODOs:
+    - Convert search header into a <form> to enable native submit behavior and progressive enhancement.
+    - Add loading indicator while fetching data.
+    - Replace inline style display toggles with utility CSS classes (e.g., .hidden) for easier state management.
+    - Implement caching for recent searches to reduce API calls.
+    - Add tests for script.js DOM interactions and fetch logic.
+
+Known Issues (to verify):
+    - Several image src values use "assets/assets/..." — confirm actual asset path.
+    - Some elements lack alt text; some icons may be decorative and should use aria-hidden or empty alt.
+
+Authoring/Ownership:
+    - This comment documents the intended structure and behavior of the provided HTML UI. Ensure script.js and style.css implement the behavior described above and keep class names synchronized.
+
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+</head>
+<body>
+    
+    <main class="main-container">
+
+        <header class="input-container">
+            <input class="city-input" placeholder="Search City" type="text">
+            <button class="search-btn">
+                <span class="material-symbols-outlined">search</span>
+            </button>
+
+        </header>
+
+        <section class="weather-info" style="display: none;">
+            <div class="location-date-container">
+                <div class="location">
+                    <span class="material-symbols-outlined">
+location_on
+</span>
+                    <h4 class="country-txt">Ghana</h4>
+                </div>
+                    <h5 class="current-date-txt regular-txt">Mon, 20 Oct</h5>            
+                </div>
+
+<div class="weather-summary-container">
+    <img src="assets/assets/weather/clouds.svg" alt="" class="weather-summary-img">
+        <div class="weather-summary-info">
+            <h1 class="temp-txt">29 °C</h1>
+            <h3 class="condition-txt regular-txt">CLouds</h3>
+        </div>
+</div>
+
+    <div class="weather-condition-container">
+        <div class="condition-item">
+            <span class="material-symbols-outlined">water_drop</span>
+            <div class="condition-info">
+                <h5 class="regular-txt">Humidity</h5>
+                <h5 class="regular-value-txt">50%</h5>
+            </div>
+        </div>
+
+         <div class="condition-item">
+            <span class="material-symbols-outlined">air</span>
+            <div class="condition-info">
+                <h5 class="regular-txt">Wind Speed</h5>
+                <h5 class="regular-value-txt">2 M/s</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="forecast-items-container">
+        <div class="forecast-item">
+            <h5 class="forecast-item-date regular-txt">20 Oct</h5>
+            <img src="assets/assets/weather/thunderstorm.svg" class="forecast-item-img">
+            <h5 class="forecast-item-temp">29 °C</h5>
+        </div>
+         <div class="forecast-item">
+            <h5 class="forecast-item-date regular-txt">20 Oct</h5>
+            <img src="assets/assets/weather/thunderstorm.svg" class="forecast-item-img">
+            <h5 class="forecast-item-temp">29 °C</h5>
+        </div>
+         <div class="forecast-item">
+            <h5 class="forecast-item-date regular-txt">20 Oct</h5>
+            <img src="assets/assets/weather/thunderstorm.svg" class="forecast-item-img">
+            <h5 class="forecast-item-temp">29 °C</h5>
+        </div>
+         <div class="forecast-item">
+            <h5 class="forecast-item-date regular-txt">20 Oct</h5>
+            <img src="assets/assets/weather/thunderstorm.svg" class="forecast-item-img">
+            <h5 class="forecast-item-temp">29 °C</h5>
+        </div>
+    </div>
+
+  </section>
+
+    <section class="search-city section-message">
+        <img src="assets/assets/message/search-city.png">
+        <div>
+            <h1>Search City</h1>
+            <h4 class="regular-txt">
+                Find out the weather conditions of the city
+            </h4>
+        </div>
+    </section>
+
+    <section class="not-found section-message" style="display: none;">
+        <img src="assets/assets/message/not-found.png">
+        <div>
+            <h1>Search City</h1>
+            <h4 class="regular-txt">
+                Find out the weather conditions of the city
+            </h4>
+        </div>
+    </section>
+    </main>
+</body>
+</html>

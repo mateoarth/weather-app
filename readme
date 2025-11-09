@@ -1,0 +1,84 @@
+// Selects the input box element where the user will type the city name
+const cityInput = document.querySelector('.city-input');
+
+// Selects the search button element that the user clicks to search for the weather
+const searchBtn = document.querySelector('.search-btn');
+
+// Selects the section that will display weather information (temperature, humidity, etc.)
+const weatherInfoSection = document.querySelector('.weather-info');
+
+// Selects the section that will show an error message when the city is not found
+const notFoundSection = document.querySelector('.not-found');
+
+// Selects the section that contains the search input field and label
+const searchCity = document.querySelector('.search-city');
+
+// Stores your unique OpenWeatherMap API key (required to access weather data)
+const apiKey = '95f5a0a8aaed9a20a701757871e4bc58';
+
+// Adds a 'click' event listener to the search button
+searchBtn.addEventListener('click', () => {
+  // Checks if the user entered a city name and it's not just empty spaces
+  if (cityInput.value.trim() !== '') {
+    // Calls the function to fetch and display weather information for the entered city
+    updateWeatherInfo(cityInput.value.trim());
+    // Clears the input box after the user searches
+    cityInput.value = '';
+    // Removes focus (cursor) from the input field to make the UI cleaner
+    cityInput.blur();
+  }
+});
+
+// Adds a 'keydown' event listener to the input field to allow pressing Enter to search
+cityInput.addEventListener('keydown', (event) => {
+  // Checks if the key pressed is 'Enter' and if the input is not empty
+  if (event.key === 'Enter' && cityInput.value.trim() !== '') {
+    // Calls the same function to fetch and display weather information
+    updateWeatherInfo(cityInput.value.trim());
+    // Clears the input box after the search
+    cityInput.value = '';
+    // Removes focus from the input field
+    cityInput.blur();
+  }
+});
+
+// Defines an asynchronous function that fetches weather data from the OpenWeather API
+async function getFechData(endPoint, city) {
+  // Builds the full API request URL with the endpoint, city, API key, and metric units
+  const apiUrl = `https://api.openweathermap.org/data/2.5/${endPoint}?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`;
+
+  // Sends a request to the OpenWeather server and waits for a response
+  const response = await fetch(apiUrl);
+
+  // Converts the raw response data into JSON format and returns it
+  return response.json();
+}
+
+// Defines an asynchronous function to process and display the weather information
+async function updateWeatherInfo(city) {
+  // Calls the getFechData function to get the weather data for the entered city
+  const weatherData = await getFechData('weather', city);
+
+  // Checks if the API response status code is not 200 (which means an error occurred)
+  if (weatherData.cod != 200) {
+    // If there's an error (e.g., city not found), display the "not found" section
+    showDisplaySection(notFoundSection);
+    // Stop the function from continuing further
+    return;
+  }
+
+  // Logs the full weather data to the browser console (for debugging or inspection)
+  console.log(weatherData);
+
+  // If the data is valid, show the weather info section on the page
+  showDisplaySection(weatherInfoSection);
+}
+
+// Defines a helper function to show one section and hide all others
+function showDisplaySection(section) {
+  // First hides all main sections (weather info, search city, and not found)
+  [weatherInfoSection, searchCity, notFoundSection].forEach(sec => sec.style.display = 'none');
+
+  // Then makes only the selected section visible (using flex display)
+  section.style.display = 'flex';
+}
